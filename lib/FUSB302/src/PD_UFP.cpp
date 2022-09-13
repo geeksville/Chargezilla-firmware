@@ -185,7 +185,7 @@ void PD_UFP_core_c::handle_protocol_event(PD_protocol_event_t events)
     }    
     if (events & PD_PROTOCOL_EVENT_PS_RDY) {
         PD_power_info_t p;
-        uint8_t i, selected_power = PD_protocol_get_selected_power(&protocol);
+        uint8_t selected_power = PD_protocol_get_selected_power(&protocol);
         PD_protocol_get_power_info(&protocol, selected_power, &p);
         wait_ps_rdy = 0;
         if (p.type == PD_PDO_TYPE_AUGMENTED_PDO) {
@@ -325,167 +325,6 @@ uint16_t PD_UFP_core_c::clock_ms(void)
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// PD_UFP_c, extended from PD_UFP_core_c, Add LED and Load switch functions
-///////////////////////////////////////////////////////////////////////////////////////////////////
-PD_UFP_c::PD_UFP_c():
-    led_blink_enable(0),
-    led_blink_status(0),
-    time_led_blink(0),
-    period_led_blink(0),
-    led_voltage(PD_UFP_VOLTAGE_LED_OFF),
-    led_current(PD_UFP_CURRENT_LED_OFF),
-    status_load_sw(0)
-{
-    digitalWrite(PIN_OUTPUT_ENABLE, 0);
-    pinMode(PIN_OUTPUT_ENABLE, OUTPUT);
-        
-    update_voltage_led(PD_UFP_VOLTAGE_LED_OFF);
-    update_current_led(PD_UFP_CURRENT_LED_OFF);    
-}
-
-void PD_UFP_c::set_led(PD_UFP_VOLTAGE_LED_t index_v, PD_UFP_CURRENT_LED_t index_a)
-{
-    led_blink_enable = 0;
-    update_voltage_led(index_v);
-    update_current_led(index_a);
-}
-
-void PD_UFP_c::set_led(uint8_t enable)
-{
-    led_blink_enable = 0;
-    if (enable) {
-        update_voltage_led(PD_UFP_VOLTAGE_LED_AUTO);
-        update_current_led(PD_UFP_CURRENT_LED_AUTO);
-    } else {
-        update_voltage_led(PD_UFP_VOLTAGE_LED_OFF);
-        update_current_led(PD_UFP_CURRENT_LED_OFF);
-    }
-}
-
-void PD_UFP_c::blink_led(uint16_t period)
-{
-    led_blink_enable = 1;
-    period_led_blink = period >> 1;
-}
-
-void PD_UFP_c::set_output(uint8_t enable)
-{
-    digitalWrite(PIN_OUTPUT_ENABLE, enable);
-    if (status_load_sw != enable) {
-        status_load_sw = enable;
-        status_log_event(enable ? STATUS_LOG_LOAD_SW_ON : STATUS_LOG_LOAD_SW_OFF);
-    }
-}
-
-void PD_UFP_c::run(void)
-{
-    PD_UFP_core_c::run();
-    handle_led();
-}
-
-void PD_UFP_c::status_power_ready(status_power_t status, uint16_t voltage, uint16_t current)
-{
-    PD_UFP_core_c::status_power_ready(status, voltage, current);
-    if (status == STATUS_POWER_PPS) {
-        calculate_led_pps(voltage, current);
-    } else {
-        calculate_led(voltage, current);
-    }
-}
-
-void PD_UFP_c::calculate_led(uint16_t voltage, uint16_t current)
-{
-    uint8_t i;
-    const uint16_t PD_V_level[4] = {PD_V(9.0), PD_V(12.0), PD_V(15.0), PD_V(20.0)};
-    const uint16_t PD_A_level[2] = {PD_A(1.5), PD_A(3.0)};
-    for (i = 0; i < 4 && voltage >= PD_V_level[i]; i++) {}
-    led_voltage = PD_UFP_VOLTAGE_LED_5V + i;
-    for (i = 0; i < 2 && current >= PD_A_level[i]; i++) {}
-    led_current = PD_UFP_CURRENT_LED_LE_1V + i;
-}
-
-void PD_UFP_c::calculate_led_pps(uint16_t PPS_voltage, uint8_t PPS_current)
-{
-    uint8_t i;
-    const uint16_t PPS_V_level[4] = {PPS_V(9.0), PPS_V(12.0), PPS_V(15.0), PPS_V(20.0)};
-    const uint8_t PPS_A_level[2] = {PPS_A(1.5), PPS_A(3.0)};
-    for (i = 0; i < 4 && PPS_voltage >= PPS_V_level[i]; i++) {}
-    led_voltage = PD_UFP_VOLTAGE_LED_5V + i;
-    for (i = 0; i < 2 && PPS_current >= PPS_A_level[i]; i++) {}
-    led_current = PD_UFP_CURRENT_LED_LE_1V + i;
-}
-
-void PD_UFP_c::update_voltage_led(PD_UFP_VOLTAGE_LED_t index)
-{
-    if (index >= PD_UFP_VOLTAGE_LED_AUTO) {
-        index = led_voltage;
-    }
-    if (index == PD_UFP_VOLTAGE_LED_OFF) {
-        DDRE &= 0xFB;  // pinMode PE2 INPUT
-        PORTE &= 0xFB;  // Clear PE2
-        pinMode(PIN_LED_VOLTAGE_2, INPUT);
-        pinMode(PIN_LED_VOLTAGE_3, INPUT);
-        pinMode(PIN_LED_VOLTAGE_4, INPUT);
-    } else {
-        const uint8_t led1[5] = {0, 0, 0, 0, 1};
-        const uint8_t led2[5] = {1, 0, 0, 0, 1};
-        const uint8_t led3[5] = {1, 1, 0, 0, 1};
-        const uint8_t led4[5] = {1, 1, 1, 0, 1};
-        index -= 1;
-        if (led1[index]) {
-            PORTE |= 0x04;  // Set PE2
-        } else {
-            PORTE &= 0xFB;  // Clear PE2
-        }
-        digitalWrite(PIN_LED_VOLTAGE_2, led2[index]);
-        digitalWrite(PIN_LED_VOLTAGE_3, led3[index]);
-        digitalWrite(PIN_LED_VOLTAGE_4, led4[index]);
-        DDRE |= 0x04;  // pinMode PE2 OUTPUT
-        pinMode(PIN_LED_VOLTAGE_2, OUTPUT);
-        pinMode(PIN_LED_VOLTAGE_3, OUTPUT);
-        pinMode(PIN_LED_VOLTAGE_4, OUTPUT);
-    }
-}
-
-void PD_UFP_c::update_current_led(PD_UFP_CURRENT_LED_t index)
-{
-    if (index >= PD_UFP_CURRENT_LED_AUTO) {
-        index = led_current;
-    }
-    if (index == PD_UFP_CURRENT_LED_OFF) {
-        pinMode(PIN_LED_CURRENT_1, INPUT);
-        pinMode(PIN_LED_CURRENT_2, INPUT);
-    } else {
-        const uint8_t led1[3] = {0, 1, 1};
-        const uint8_t led2[3] = {0, 0, 1};
-        index -= 1;
-        digitalWrite(PIN_LED_CURRENT_1, led1[index]);
-        digitalWrite(PIN_LED_CURRENT_2, led2[index]);
-        pinMode(PIN_LED_CURRENT_1, OUTPUT);
-        pinMode(PIN_LED_CURRENT_2, OUTPUT);
-    }
-}
-        
-void PD_UFP_c::handle_led(void)
-{
-    if (led_blink_enable) {
-        uint16_t t = clock_ms();
-        if (t - time_led_blink > period_led_blink) {
-            time_led_blink = t;
-            if (led_blink_status) {
-                update_voltage_led(PD_UFP_VOLTAGE_LED_OFF);
-                update_current_led(PD_UFP_CURRENT_LED_OFF);
-                led_blink_status = 0;
-            } else {
-                update_voltage_led(PD_UFP_VOLTAGE_LED_AUTO);
-                update_current_led(PD_UFP_CURRENT_LED_AUTO);
-                led_blink_status = 1;
-            }
-        }
-    }
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,7 +389,9 @@ void PD_UFP_log_c::status_log_event(uint8_t status, uint32_t * obj)
 #define SNPRINTF snprintf_P
 #else
 #define SNPRINTF snprintf
+#ifndef PSTR
 #define PSTR(str) str
+#endif
 #endif
 
 #define LOG(format, ...) do { n = SNPRINTF(buffer, maxlen, PSTR(format), ## __VA_ARGS__); } while (0)
@@ -577,7 +418,7 @@ int PD_UFP_log_c::status_log_readline_msg(char * buffer, int maxlen, status_log_
         // output object data
         int i = status_log_counter - 1;
         uint32_t obj = status_log_obj[status_log_obj_read++ & STATUS_LOG_OBJ_MASK];
-        LOG("%s obj%d=0x%08lX\n", t, i, obj);
+        LOG("%s obj%d=0x%08X\n", t, i, obj);
         if (++status_log_counter > log->obj_count) {
             status_log_counter = 0;
         }
@@ -685,6 +526,7 @@ int PD_UFP_log_c::status_log_readline(char * buffer, int maxlen)
     return n;
 }
 
+#if 0
 void PD_UFP_log_c::print_status(Serial_ & serial)
 {
     // Wait for enough tx buffer in serial port to avoid blocking
@@ -695,6 +537,9 @@ void PD_UFP_log_c::print_status(Serial_ & serial)
         }
     }
 }
+#endif
+
+#define SERIAL_BUFFER_SIZE 64
 
 void PD_UFP_log_c::print_status(HardwareSerial & serial)
 {

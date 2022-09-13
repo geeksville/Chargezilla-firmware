@@ -1,14 +1,15 @@
 #include <Arduino.h>
 #include <PD_UFP.h>
 
-class PD_UFP_c PD_UFP;
+class PD_UFP_core_c PD_UFP;
 
 void setup() { 
-  Serial.begin(9600); 
-
-  }
+  Serial.begin(9600);
+  Serial.println("Hello esp8266");
+  PD_UFP.init(PD_POWER_OPTION_MAX_20V);
+}
 
 void loop() {
-  Serial.println("Hello esp8266");
-  delay(1000);
+  PD_UFP.run();
+  delay(5); // max sleep of 10ms to keep USB happy
 }

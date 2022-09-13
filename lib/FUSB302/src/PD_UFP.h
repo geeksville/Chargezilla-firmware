@@ -28,26 +28,6 @@ extern "C" {
 }
 
 enum {
-    PD_UFP_VOLTAGE_LED_OFF      = 0,
-    PD_UFP_VOLTAGE_LED_5V       = 1,
-    PD_UFP_VOLTAGE_LED_9V       = 2,
-    PD_UFP_VOLTAGE_LED_12V      = 3,
-    PD_UFP_VOLTAGE_LED_15V      = 4,
-    PD_UFP_VOLTAGE_LED_20V      = 5,
-    PD_UFP_VOLTAGE_LED_AUTO     = 6
-};
-typedef uint8_t PD_UFP_VOLTAGE_LED_t;
-
-enum {
-    PD_UFP_CURRENT_LED_OFF      = 0,
-    PD_UFP_CURRENT_LED_LE_1V    = 1,
-    PD_UFP_CURRENT_LED_LE_3V    = 2,
-    PD_UFP_CURRENT_LED_GT_3V    = 3,
-    PD_UFP_CURRENT_LED_AUTO     = 4    
-};
-typedef uint8_t PD_UFP_CURRENT_LED_t;
-
-enum {
     STATUS_POWER_NA = 0,
     STATUS_POWER_TYP,
     STATUS_POWER_PPS
@@ -119,43 +99,6 @@ class PD_UFP_core_c
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// PD_UFP_c, extended from PD_UFP_core_c, Add LED and Load switch functions
-///////////////////////////////////////////////////////////////////////////////////////////////////
-class PD_UFP_c : public PD_UFP_core_c
-{
-    public:
-        PD_UFP_c();
-        // Set LED
-        void set_led(uint8_t enable);
-        void set_led(PD_UFP_VOLTAGE_LED_t index_v, PD_UFP_CURRENT_LED_t index_a);
-        void blink_led(uint16_t period);
-        // Set Load Switch
-        void set_output(uint8_t enable);
-        // Task
-        void run(void);
-
-    protected:
-        // Status
-        virtual void status_power_ready(status_power_t status, uint16_t voltage, uint16_t current);
-        // LED
-        uint8_t led_blink_enable;
-        uint8_t led_blink_status;
-        uint16_t time_led_blink;
-        uint16_t period_led_blink;
-        PD_UFP_VOLTAGE_LED_t led_voltage;
-        PD_UFP_CURRENT_LED_t led_current;
-        void calculate_led(uint16_t voltage, uint16_t current);
-        void calculate_led_pps(uint16_t PPS_voltage, uint8_t PPS_current);
-        void update_voltage_led(PD_UFP_VOLTAGE_LED_t index);
-        void update_current_led(PD_UFP_CURRENT_LED_t index);
-        void handle_led(void);
-        // Load Switch
-        uint8_t status_load_sw;
-};
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 // Optional: PD_UFP_log_c, extended from PD_UFP_c to provide logging function.
 //           Asynchronous, minimal impact on PD timing.
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,12 +114,12 @@ enum pd_log_level_t {
     PD_LOG_LEVEL_VERBOSE
 };
 
-class PD_UFP_log_c : public PD_UFP_c
+class PD_UFP_log_c : public PD_UFP_core_c
 {
     public:
         PD_UFP_log_c(pd_log_level_t log_level = PD_LOG_LEVEL_INFO);
         // Task
-        void print_status(Serial_ & serial);
+        // void print_status(Serial_ & serial);
         void print_status(HardwareSerial & serial);
         // Get
         int status_log_readline(char * buffer, int maxlen);
@@ -189,16 +132,16 @@ class PD_UFP_log_c : public PD_UFP_c
         virtual void status_log_event(uint8_t status, uint32_t * obj);
         // status log event queue
         status_log_t status_log[16];    // array size must be power of 2 and <=256
-        uint8_t status_log_read;
         uint8_t status_log_write;
+        uint8_t status_log_read;
         // status log object queue
         uint32_t status_log_obj[16];    // array size must be power of 2 and <=256
+        uint8_t status_log_counter;
+        char status_log_time[8];
         uint8_t status_log_obj_read;
         uint8_t status_log_obj_write;
         // state variables
         pd_log_level_t status_log_level;
-        uint8_t status_log_counter;        
-        char status_log_time[8];
 };
 
 #endif

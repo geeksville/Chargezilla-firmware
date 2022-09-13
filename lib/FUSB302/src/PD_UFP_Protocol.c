@@ -62,7 +62,9 @@ struct PD_msg_state_t {
 #define SET_MSG_NAME(d, s)  do { static char n[16]; strncpy_P(n, s, 15); d = n; } while (0)
 #define COPY_PDO(d, s)      do { memcpy_P(&d, &s, 4); } while (0)
 #else
+#ifndef PROGMEM
 #define PROGMEM
+#endif
 #define SET_MSG_STAGE(d, s) do { d = s; } while (0)
 #define SET_MSG_NAME(d, s)  do { d = s; } while (0)
 #define COPY_PDO(d, s)      do { d = s; } while (0)
