@@ -1,15 +1,18 @@
 # README
 
-This project is not yet ready for anyone to use it ;-).  When it is ready this README will be more useful.  Currently it is an unformatted set of notes.
+This project is not yet ready for anyone to use ;-).  
 
+When it is ready this README will be more useful.  Currently it is an unformatted set of notes.
 
-temporary devboard
+## temporary devboard
 pinout https://resource.heltec.cn/download/WiFi_Kit_8/WIFI_Kit_8_Pinout_Diagram.pdf
 
-SDA GPIO4/16/D2
-SCL GPIO5/24/D1
+* SDA GPIO4/16/D2
+* SCL GPIO5/24/D1
 
 ## Real board hardware notes
+
+From coffeemaker:
 
 Here's a draft of the schematic. The basic components are:
 1. ESP-8266 in a ESP-12F module: https://docs.ai-thinker.com/_media/esp8266/docs/esp-12f_product_specification_en.pdf
