@@ -5,7 +5,7 @@
 * Add easy build instructions via VSCode/PlatformIO
 * Basic hardwired wifi config
 * FUSB302B USB-C PD controller support
-* LT3744-2 CC-CV boost controller support
+* LT3744-2 CC-CV boost controller support - esp8266 arduino layer has a wrapper to drive a PWM output as a basic DAC https://randomnerdtutorials.com/esp8266-pwm-arduino-ide/
 * Basic charge algorithm
 
 ## Before user release
