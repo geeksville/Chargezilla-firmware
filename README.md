@@ -39,6 +39,13 @@ The CV mode voltage 54.375V is set by the resistor divider R1 and R2 into the fe
 
 I think this may be a good reference for the USB-C PD IC: https://github.com/ryan-ma/PD_Micro
 
+# Credits
+
+We'd like to thank:
+
+* https://github.com/ryan-ma/PD_Micro for their (MIT License) great FUSB302 code (which we've lightly reorganized for our use)
+
+
 # License
 
 FIXME TBD
