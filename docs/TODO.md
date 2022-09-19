@@ -2,8 +2,6 @@
 
 ## Before real board
 
-* Add easy build instructions via VSCode/PlatformIO
-* Basic hardwired wifi config
 * FUSB302B USB-C PD controller support
 * Check that PIN_FUSB302_INT actually maps to GPIO 9 in the arduino firmware
 * LT3744-2 CC-CV boost controller support - esp8266 arduino layer has a wrapper to drive a PWM output as a basic DAC https://randomnerdtutorials.com/esp8266-pwm-arduino-ide/
@@ -11,6 +9,8 @@
 
 ## Before user release
 
+* Figure out if temperature monitoring is needed or possible
+* Basic hardwired wifi config
 * application monitor via hw watchdog, ensure it stops charging on failure
 * Nice ad-hoc/infrastructure wifi setup flow (via a TBD lib)
 * REST/JSON API for monitoring & setting charge options

@@ -87,5 +87,5 @@ Hard resetting via RTS pin...
 
 ## Monitoring the debug serial output
 
-You can see the serial debugging output at 9600 bps with a command like: "pio run -t monitor"
+You can see the serial debugging output at 9600 bps with a command like: "pio run -t monitor".  Or if you'd like to build/install and then switch to the debug console it can be done with one command "pio run -t upload -t monitor".  Press ctrl-c to exit the serial monitor.
 

@@ -1,0 +1,16 @@
+
+initial => NoBattery;
+
+NoBattery => PreCharging: vSense >= BatteryConnectV;
+PreCharging => FullCharging: vSense >= ChargingThresholdV;
+FullCharging => TaperCharging: vSense >= TaperThresholdV;
+TaperCharging => ChargingComplete: cSense < ChargeCompleteC;
+
+PreCharging => FaultDetected: prechargeTimeout;
+FullCharging => FaultDetected: fullchargeTimeout;
+TaperCharging => FaultDetected: taperchargeTimeout;
+
+PreCharging => NoBattery: vSense < BatteryDisconnectV;
+FullCharging => NoBattery: vSense < BatteryDisconnectV;
+TaperCharging => NoBattery: vSense < BatteryDisconnectV;
+ChargingComplete => NoBattery: vSense < BatteryDisconnectV;

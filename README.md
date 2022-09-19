@@ -6,11 +6,11 @@ When it is ready this README will be more useful.  Currently it is an unformatte
 
 ## How to build/run/install
 
-See [BUILD.md](docs/BUILD.md)/
+See [docs/BUILD](docs/BUILD.md).
 
 ## Remaining TODO items
 
-See [TODO.md](docs/TODO.md) for remaining software work items before bringing-up the board and running the charge algorithm.
+See [docs/TODO](docs/TODO.md) for remaining software work items before bringing-up the board and running the charge algorithm.
 
 ## temporary devboard
 
@@ -18,11 +18,6 @@ pinout https://resource.heltec.cn/download/WiFi_Kit_8/WIFI_Kit_8_Pinout_Diagram.
 
 * SDA GPIO4/16/D2
 * SCL GPIO5/24/D1
-
-
-## Charge algorithm notes
-
-Lots of good tips here: https://batteryuniversity.com/article/bu-409-charging-lithium-ion
 
 ## Does the battery provide temperature feedback?
 
