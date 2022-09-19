@@ -1,5 +1,6 @@
-
-initial => NoBattery;
+initial,
+USBPowerBad,
+USBPowerOk {
 
 NoBattery => PreCharging: vSense >= BatteryConnectV;
 PreCharging => FullCharging: vSense >= ChargingThresholdV;
@@ -14,3 +15,10 @@ PreCharging => NoBattery: vSense < BatteryDisconnectV;
 FullCharging => NoBattery: vSense < BatteryDisconnectV;
 TaperCharging => NoBattery: vSense < BatteryDisconnectV;
 ChargingComplete => NoBattery: vSense < BatteryDisconnectV;
+
+};
+
+initial => USBPowerBad;
+
+USBPowerBad => NoBattery: USB power ok;
+USBPowerOk => USBPowerBad: USB power bad;
