@@ -1,10 +1,19 @@
-# README
+# Chargezilla README
 
 This project is not yet ready for anyone to use ;-).  
 
 When it is ready this README will be more useful.  Currently it is an unformatted set of notes.
 
+## How to build/run/install
+
+See [BUILD.md](docs/BUILD.md)/
+
+## Remaining TODO items
+
+See [TODO.md](docs/TODO.md) for remaining software work items before bringing-up the board and running the charge algorithm.
+
 ## temporary devboard
+
 pinout https://resource.heltec.cn/download/WiFi_Kit_8/WIFI_Kit_8_Pinout_Diagram.pdf
 
 * SDA GPIO4/16/D2

@@ -6,10 +6,12 @@ class PD_UFP_core_c PD_UFP;
 void setup() { 
   Serial.begin(9600);
   Serial.println("Hello esp8266");
-  PD_UFP.init(PD_POWER_OPTION_MAX_20V);
+  // Disable until real hardware is available
+  //PD_UFP.init(PD_POWER_OPTION_MAX_20V);
 }
 
 void loop() {
-  PD_UFP.run();
+  // Disable until real hardware is available
+  //PD_UFP.run();
   delay(5); // max sleep of 10ms to keep USB happy
 }

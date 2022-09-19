@@ -23,15 +23,7 @@
 #define t_RequestToPSReady      580     // combine t_SenderResponse and t_PSTransition
 #define t_PPSRequest            5000    // must less than 10000 (10s)
 
-#define PIN_OUTPUT_ENABLE       10
-#define PIN_FUSB302_INT         7
-
-#define PIN_LED_CURRENT_1       13
-#define PIN_LED_CURRENT_2       12
-#define PIN_LED_VOLTAGE_1       // PE2 not support by ardunio library, manipulate register directly
-#define PIN_LED_VOLTAGE_2       22
-#define PIN_LED_VOLTAGE_3       23
-#define PIN_LED_VOLTAGE_4       11
+#define PIN_FUSB302_INT         9       // Chargezille GPIO9? FIXME-check
 
 enum {
     STATUS_LOG_MSG_TX,
